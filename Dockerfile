@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:1
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     libfuse2 \
     libgtk-3-0 \
     libglib2.0-0 \
-    libwebkit2gtk-4.0-37 \
+    libwebkit2gtk-4.1-0 \
     libgstreamer1.0-0 \
     libgstreamer-plugins-base1.0-0 \
     libopengl0 \
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # OrcaSlicer herunterladen
-RUN wget -q https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.0/OrcaSlicer_Linux_V2.3.0.AppImage \
+RUN wget -q https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.1/OrcaSlicer_Linux_AppImage_Ubuntu2404_V2.3.1.AppImage \
     -O /opt/OrcaSlicer.AppImage && \
     chmod +x /opt/OrcaSlicer.AppImage
 
