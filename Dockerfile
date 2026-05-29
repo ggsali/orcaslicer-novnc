@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     novnc \
     websockify \
     supervisor \
-    libfuse2 \
     libgtk-3-0 \
     libglib2.0-0 \
     libwebkit2gtk-4.1-0 \
@@ -24,12 +23,16 @@ RUN apt-get update && apt-get install -y \
     libglx0 \
     libgl1 \
     dbus-x11 \
+    libfuse2 \
     && rm -rf /var/lib/apt/lists/*
 
-# OrcaSlicer herunterladen
+# OrcaSlicer herunterladen und entpacken
 RUN wget -q https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.1/OrcaSlicer_Linux_AppImage_Ubuntu2404_V2.3.1.AppImage \
-    -O /opt/OrcaSlicer.AppImage && \
-    chmod +x /opt/OrcaSlicer.AppImage
+    -O /tmp/OrcaSlicer.AppImage && \
+    chmod +x /tmp/OrcaSlicer.AppImage && \
+    cd /opt && /tmp/OrcaSlicer.AppImage --appimage-extract && \
+    mv squashfs-root orcaslicer && \
+    rm /tmp/OrcaSlicer.AppImage
 
 # noVNC setup
 RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html 2>/dev/null || true
