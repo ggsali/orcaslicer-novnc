@@ -1,13 +1,43 @@
-FROM lscr.io/linuxserver/orcaslicer:latest
+FROM ubuntu:22.04
 
-# Patch nur JavaScript - Python NICHT anfassen
-RUN find /usr/share/selkies -name "*.js" -exec sed -i \
-    's/window\.isSecureContext/true/g' {} \; 2>/dev/null || true
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:1
+ENV RESOLUTION=1920x1080x24
 
-RUN find /usr/share/selkies -name "*.js" -exec sed -i \
-    's/!window\.isSecureContext/false/g' {} \; 2>/dev/null || true
+# Basis-Pakete
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    xvfb \
+    openbox \
+    x11vnc \
+    novnc \
+    websockify \
+    supervisor \
+    libfuse2 \
+    libgtk-3-0 \
+    libglib2.0-0 \
+    libwebkit2gtk-4.0-37 \
+    libgstreamer1.0-0 \
+    libgstreamer-plugins-base1.0-0 \
+    libopengl0 \
+    libglx0 \
+    libgl1 \
+    dbus-x11 \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV SELKIES_ENABLE_HTTPS=false
-ENV PIXELFLUX_WAYLAND=false
-EXPOSE 3000
-EXPOSE 3001
+# OrcaSlicer herunterladen
+RUN wget -q https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.0/OrcaSlicer_Linux_V2.3.0.AppImage \
+    -O /opt/OrcaSlicer.AppImage && \
+    chmod +x /opt/OrcaSlicer.AppImage
+
+# noVNC setup
+RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html 2>/dev/null || true
+
+# Supervisor config
+RUN mkdir -p /etc/supervisor/conf.d
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 8080
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
